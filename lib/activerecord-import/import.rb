@@ -64,7 +64,7 @@ class ActiveRecord::Associations::CollectionAssociation
         m.public_send "#{reflection.type}=", owner.class.name if reflection.type
       end
 
-      return model_klass.import column_names, models, options
+      return model_klass.ar_import column_names, models, options
 
     # supports empty array
     elsif args.last.is_a?( Array ) && args.last.empty?
@@ -88,7 +88,7 @@ class ActiveRecord::Associations::CollectionAssociation
         array_of_attributes.each { |attrs| attrs << owner.class.name }
       end
 
-      return model_klass.import column_names, array_of_attributes, options
+      return model_klass.ar_import column_names, array_of_attributes, options
     else
       raise ArgumentError, "Invalid arguments!"
     end
@@ -308,7 +308,7 @@ class ActiveRecord::Base
     # * failed_instances - an array of objects that fails validation and were not committed to the database. An empty array if no validation is performed.
     # * num_inserts - the number of insert statements it took to import the data
     # * ids - the primary keys of the imported ids, if the adpater supports it, otherwise and empty array.
-    def import(*args)
+    def ar_import(*args)
       if args.first.is_a?( Array ) && args.first.first.is_a?(ActiveRecord::Base)
         options = {}
         options.merge!( args.pop ) if args.last.is_a?(Hash)
@@ -323,12 +323,12 @@ class ActiveRecord::Base
     # Imports a collection of values if all values are valid. Import fails at the
     # first encountered validation error and raises ActiveRecord::RecordInvalid
     # with the failed instance.
-    def import!(*args)
+    def ar_import!(*args)
       options = args.last.is_a?( Hash ) ? args.pop : {}
       options[:validate] = true
       options[:raise_error] = true
 
-      import(*args, options)
+      ar_import(*args, options)
     end
 
     def import_helper( *args )
